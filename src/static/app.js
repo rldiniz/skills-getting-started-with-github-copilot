@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
-  const studentsList = document.getElementById("students-list");
 
   // Function to fetch activities from API
   async function fetchActivities() {
@@ -21,11 +20,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // Create participants list
+        let participantsHTML = "<ul>";
+        if (details.participants.length === 0) {
+          participantsHTML += "<li><em>No participants yet</em></li>";
+        } else {
+          details.participants.forEach(email => {
+            participantsHTML += `<li>${email}</li>`;
+          });
+        }
+        participantsHTML += "</ul>";
+
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <div class="participants-section">
+            <strong>Participants:</strong>
+            ${participantsHTML}
+          </div>
         `;
 
         activitiesList.appendChild(activityCard);
@@ -39,32 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
-    }
-  }
-
-  // Function to fetch and display students and their enrollments
-  async function fetchStudents() {
-    try {
-      const response = await fetch("/students");
-      const students = await response.json();
-
-      studentsList.innerHTML = "";
-
-      if (Object.keys(students).length === 0) {
-        studentsList.innerHTML = "<p>No students enrolled yet.</p>";
-        return;
-      }
-
-      const ul = document.createElement("ul");
-      Object.entries(students).forEach(([email, activities]) => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${email}</strong>: ${activities.join(", ")}`;
-        ul.appendChild(li);
-      });
-      studentsList.appendChild(ul);
-    } catch (error) {
-      studentsList.innerHTML = "<p>Failed to load students. Please try again later.</p>";
-      console.error("Error fetching students:", error);
     }
   }
 
@@ -90,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.className = "success";
         signupForm.reset();
         fetchActivities();
-        fetchStudents();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
@@ -112,5 +99,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize app
   fetchActivities();
-  fetchStudents();
 });
