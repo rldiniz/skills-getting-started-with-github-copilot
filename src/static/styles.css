@@ -142,3 +142,11 @@ footer {
   padding: 20px;
   color: #666;
 }
+
+.participant {
+  color: #388e3c;
+  font-weight: bold;
+  font-size: 1em;
+  padding: 2px 0;
+  letter-spacing: 0.5px;
+}

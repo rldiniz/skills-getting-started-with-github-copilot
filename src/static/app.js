@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
           participantsHTML += "<li><em>No participants yet</em></li>";
         } else {
           details.participants.forEach(email => {
-            participantsHTML += `<li>${email}</li>`;
+            participantsHTML += `<li class=\"participant\">${email}</li>`;
           });
         }
         participantsHTML += "</ul>";
