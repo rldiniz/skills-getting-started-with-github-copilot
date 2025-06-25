@@ -38,6 +38,30 @@ activities = {
         "schedule": "Mondays, Wednesdays, Fridays, 2:00 PM - 3:00 PM",
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
+    },
+    "Art Club": {
+        "description": "Explore painting, drawing, and sculpture with fellow students",
+        "schedule": "Wednesdays, 4:00 PM - 5:30 PM",
+        "max_participants": 15,
+        "participants": ["lucas@mergington.edu", "mia@mergington.edu"]
+    },
+    "Debate Team": {
+        "description": "Develop public speaking and argumentation skills",
+        "schedule": "Thursdays, 3:45 PM - 5:15 PM",
+        "max_participants": 10,
+        "participants": ["liam@mergington.edu", "ava@mergington.edu"]
+    },
+    "Robotics Club": {
+        "description": "Design, build, and program robots for competitions",
+        "schedule": "Mondays, 4:00 PM - 6:00 PM",
+        "max_participants": 18,
+        "participants": ["noah@mergington.edu", "isabella@mergington.edu"]
+    },
+    "Drama Club": {
+        "description": "Act, direct, and produce school plays and performances",
+        "schedule": "Tuesdays, 3:30 PM - 5:00 PM",
+        "max_participants": 25,
+        "participants": ["ethan@mergington.edu", "charlotte@mergington.edu"]
     }
 }
 
@@ -62,6 +86,19 @@ def signup_for_activity(activity_name: str, email: str):
     # Get the specific activity
     activity = activities[activity_name]
 
+    # Check if student is already signed up
+    if email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student already signed up")
+
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+@app.get("/students")
+def get_students():
+    """Return a dictionary of students and their enrolled activities"""
+    students = {}
+    for activity_name, details in activities.items():
+        for email in details["participants"]:
+            students.setdefault(email, []).append(activity_name)
+    return students
