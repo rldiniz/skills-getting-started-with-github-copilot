@@ -93,3 +93,12 @@ def signup_for_activity(activity_name: str, email: str):
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+@app.get("/students")
+def get_students():
+    """Return a dictionary of students and their enrolled activities"""
+    students = {}
+    for activity_name, details in activities.items():
+        for email in details["participants"]:
+            students.setdefault(email, []).append(activity_name)
+    return students

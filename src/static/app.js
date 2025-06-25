@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
+  const studentsList = document.getElementById("students-list");
 
   // Function to fetch activities from API
   async function fetchActivities() {
@@ -41,6 +42,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Function to fetch and display students and their enrollments
+  async function fetchStudents() {
+    try {
+      const response = await fetch("/students");
+      const students = await response.json();
+
+      studentsList.innerHTML = "";
+
+      if (Object.keys(students).length === 0) {
+        studentsList.innerHTML = "<p>No students enrolled yet.</p>";
+        return;
+      }
+
+      const ul = document.createElement("ul");
+      Object.entries(students).forEach(([email, activities]) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${email}</strong>: ${activities.join(", ")}`;
+        ul.appendChild(li);
+      });
+      studentsList.appendChild(ul);
+    } catch (error) {
+      studentsList.innerHTML = "<p>Failed to load students. Please try again later.</p>";
+      console.error("Error fetching students:", error);
+    }
+  }
+
   // Handle form submission
   signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -62,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        fetchActivities();
+        fetchStudents();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
@@ -83,4 +112,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize app
   fetchActivities();
+  fetchStudents();
 });
